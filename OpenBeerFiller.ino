@@ -31,6 +31,7 @@
 bool fillSensor1Triggered = false;
 bool fillSensor2Triggered = false;
 bool fillSensor3Triggered = false;
+bool fillingInProgress = false;
 
 /**
  * ***************************************************************************
@@ -102,7 +103,7 @@ bool allFillSensorsTriggered() {
 }
 
 void resetFillSensorTriggers() {
-  fillSensor1Triggered = fillSensor2Triggered = fillSensor3Triggered = false;
+  fillSensor1Triggered = fillSensor2Triggered = fillSensor3Triggered = fillingInProgress = false;
 }
 
 /**
@@ -113,6 +114,7 @@ void openBeerInlets() {
   digitalWrite(BEER_INLET_SOL_1, HIGH);
   digitalWrite(BEER_INLET_SOL_2, HIGH);
   digitalWrite(BEER_INLET_SOL_3, HIGH);
+  fillingInProgress = true;
 }
 
 /**
@@ -171,14 +173,15 @@ void loop() {
 
   // Start the process.
   // Lets assume the belt has bottles and there are empty bottles underneath the filler tubes.
-  if ( ! allFillSensorsTriggered() ) {
+  if ( ! allFillSensorsTriggered() && ! fillingInProgress ) {
     lowerFillerTubes();
     openBeerInlets();
     purgeCO2();
-    if ( allFillSensorsTriggered() ) {
-      raiseFillerTubes();
-      moveBeerBelt();
-      resetFillSensorTriggers();
-    }
+  }
+  // If we are done filling, rase filling tubes, move the beer belt for next batch and reset the triggers to start all over again.
+  if ( allFillSensorsTriggered() && fillingInProgress ) {
+    raiseFillerTubes();
+    moveBeerBelt();
+    resetFillSensorTriggers();
   }
 }
