@@ -28,9 +28,9 @@
  * ******************************* VARIABLES *********************************
  * ***************************************************************************
  */
-boolean fillSensor1Triggered = false;
-boolean fillSensor2Triggered = false;
-boolean fillSensor3Triggered = false;
+bool fillSensor1Triggered = false;
+bool fillSensor2Triggered = false;
+bool fillSensor3Triggered = false;
 
 /**
  * ***************************************************************************
@@ -97,7 +97,7 @@ void triggerFullFillSensor3() {
 /**
  * Return whether all fill sensors have been triggered or not.
  */
-boolean allFillSensorsTriggered() {
+bool allFillSensorsTriggered() {
   return fillSensor1Triggered && fillSensor2Triggered && fillSensor3Triggered;
 }
 
@@ -175,12 +175,10 @@ void loop() {
     lowerFillerTubes();
     openBeerInlets();
     purgeCO2();
-    while ( ! allFillSensorsTriggered() ) {
-      if ( allFillSensorsTriggered() ) {
-        raiseFillerTubes();
-        moveBeerBelt();
-        resetFillSensorTriggers();
-      }
+    if ( allFillSensorsTriggered() ) {
+      raiseFillerTubes();
+      moveBeerBelt();
+      resetFillSensorTriggers();
     }
   }
 }
