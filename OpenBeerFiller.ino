@@ -33,6 +33,10 @@ bool fillSensor2Triggered = false;
 bool fillSensor3Triggered = false;
 bool fillingInProgress = false;
 
+void ICACHE_RAM_ATTR triggerFullFillSensor1();
+void ICACHE_RAM_ATTR triggerFullFillSensor2();
+void ICACHE_RAM_ATTR triggerFullFillSensor3();
+
 /**
  * ***************************************************************************
  * ******************************** FUNCTIONS ********************************
