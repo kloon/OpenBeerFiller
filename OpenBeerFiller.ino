@@ -48,11 +48,6 @@ void setupPins() {
   pinMode(BEER_INLET_SOL_2, OUTPUT);
   pinMode(BEER_INLET_SOL_3, OUTPUT);
 
-  // Beer fill sensors
-  pinMode(BEER_FILL_SENSOR_1, INPUT);
-  pinMode(BEER_FILL_SENSOR_2, INPUT);
-  pinMode(BEER_FILL_SENSOR_3, INPUT);
-
   // Other solenoids controlling various things.
   pinMode(CO2_PURGE_SOL, OUTPUT);
   pinMode(FILL_RAIL_SOL, OUTPUT);
