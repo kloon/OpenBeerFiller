@@ -173,12 +173,14 @@ void loop() {
   // Lets assume the belt has bottles and there are empty bottles underneath the filler tubes.
   if ( ! allFillSensorsTriggered() ) {
     lowerFillerTubes();
-    purgeCO2();
     openBeerInlets();
-    if ( allFillSensorsTriggered() ) {
-      raiseFillerTubes();
-      moveBeerBelt();
-      resetFillSensorTriggers();
+    purgeCO2();
+    while ( ! allFillSensorsTriggered() ) {
+      if ( allFillSensorsTriggered() ) {
+        raiseFillerTubes();
+        moveBeerBelt();
+        resetFillSensorTriggers();
+      }
     }
   }
 }
