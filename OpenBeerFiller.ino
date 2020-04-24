@@ -175,8 +175,8 @@ void loop() {
   // Lets assume the belt has bottles and there are empty bottles underneath the filler tubes.
   if ( ! allFillSensorsTriggered() && ! fillingInProgress ) {
     lowerFillerTubes();
-    openBeerInlets();
     purgeCO2();
+    openBeerInlets();  
   }
   // If we are done filling, rase filling tubes, move the beer belt for next batch and reset the triggers to start all over again.
   if ( allFillSensorsTriggered() && fillingInProgress ) {
