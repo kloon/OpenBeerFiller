@@ -1,0 +1,4 @@
+//to add a start button to the code. then turn on led light on untill next loop.
+while(digitalRead(StartButton)==LOW) { digitalWrite(StartButtonLED, LOW); }      
+// The program will get stopped in this while() loop as untill the start button is pressed.
+digitalWrite(StartButtonLED, HIGH);
