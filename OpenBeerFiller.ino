@@ -141,6 +141,7 @@ void raiseFillerTubes() {
 void lowerFillerTubes() {
   Serial.println("Lowering filler tubes");
   digitalWrite(FILL_RAIL_SOL, HIGH);
+  delay (WAIT_FOR_TUBES);
   // We might need to add a delay here depending on how long it takes to fully lower the tubes.
 }
 
