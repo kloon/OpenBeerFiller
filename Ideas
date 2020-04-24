@@ -3,5 +3,5 @@ while(digitalRead(StartButton)==LOW) { digitalWrite(StartButtonLED, LOW); }
 // The program will get stopped in this while() loop as untill the start button is pressed.
 digitalWrite(StartButtonLED, HIGH);
 
-
-// code to reset all air rams to default, this realy should happen every time it start / or switched on. might need you help here Kloon.
+// we need move tins/bottles 
+// code needs reset all air rams to default, this realy should happen every time it start / or switched on. might need you help here Kloon.
