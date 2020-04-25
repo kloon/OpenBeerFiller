@@ -1,0 +1,15 @@
+start conditions;     LED's  =  can push off/ fill rail on/ co2 off/ fill 1 off/ fill 2 off/ fill 3 off/   Inputs  =  start button low/ beer sensor 1 low/ beer sensor 2 low/ beer sensor 3 low/
+1, push start button,
+2, can push light on for 2500ms
+3, can push light off
+4, pause 100ms
+5, fill rail light off   ///NOTE THAT THIS STAYS OFF UNTIL CANS ARE FULL///
+6, pause 2000ms for it physically drop down
+7, co2 on 3000ms or whatever to purge
+8, co2 off
+9, fill  lights 1,2 & 3 on ( beer flows)
+10, beer sensor go high, (I push the Buttons one at a time)
+11, fill lights off as I push the buttons.
+12, fill rail light on
+13, pause 2000ms for it to physically raise.
+14, wait for start button/ cycle starts again.
