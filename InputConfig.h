@@ -23,6 +23,7 @@
 /**
  * Pin definitions
  */
+#define START_BUTTON 8
 #define BEER_INLET_SOL_1 5
 #define BEER_INLET_SOL_2 6
 #define BEER_INLET_SOL_3 7
