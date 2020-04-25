@@ -5,3 +5,7 @@ digitalWrite(StartButtonLED, HIGH);
 
 // we need move tins/bottles at the start of the loop just incase its the first run.
 // code needs reset all air rams to default, this realy should happen every time it start / or switched on. might need you help here Kloon.
+
+// withdrawing the fillers from the cans will reduce the contents slightly, uk regs being what they are we may need to backfill following 
+// the retraction of the fillers it might be preferable if this is done before they are fully retracted. if this could be timed to happen
+// just as the before the fillers get above the liquid this would reduce splashing and any possible contamination. 
