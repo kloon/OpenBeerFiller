@@ -133,6 +133,7 @@ void purgeCO2() {
 void raiseFillerTubes() {
   Serial.println("Raising filler tubes");
   digitalWrite(FILL_RAIL_SOL, LOW);
+  delay (WAIT_FOR_TUBES);
   // We might need to add a delay here depending on how long it takes to fully raise the tubes.
 }
 
@@ -172,9 +173,9 @@ void setup() {
 void loop() {
   // What do we want to do when the program starts? We cannot just start pouring beer????
   // Start the process.
-  while(digitalRead(START_BUTTON)==LOW) { } // Yout will need to prees the start button for every run.
+  while(digitalRead(START_BUTTON)==LOW) {  Serial.println( "Waiting For Start Button" ); } // Yout will need to prees the start button for every run.
   // Move items into the filling area 
-  moveBeerBelt();
+   moveBeerBelt();
 // The program will get stopped in this while() loop as untill the start button is pressed.
   // Lets assume the belt has bottles and there are empty bottles underneath the filler tubes.
   if ( ! allFillSensorsTriggered() && ! fillingInProgress ) {
