@@ -11,3 +11,6 @@ digitalWrite(StartButtonLED, HIGH);
 // just as the before the fillers get above the liquid this would reduce splashing and any possible contamination. 
 
 // if we set the sensors a little higher to make up for the drop, could this work?
+// -Probably depends on the volume of the steel below the top of the fluid (thickness of the pipe walls etc) may not be an issue but the
+// cans I've looked at tonight have very little unfilled space. Its just really something to keep in mind. The beer still in the pipe may
+// be enough todo it as it drops out on the raise. 
