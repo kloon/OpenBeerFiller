@@ -23,6 +23,10 @@
 #include "Config.h";
 #include "InputConfig.h";
 
+#ifndef ICACHE_RAM_ATTR
+#define ICACHE_RAM_ATTR     __attribute__((section(".iram.text")))
+#endif
+
 /**
  * ***************************************************************************
  * ******************************* VARIABLES *********************************
@@ -183,6 +187,12 @@ void loop() {
     purgeCO2();
     openBeerInlets();  
   }
+
+//Wait Here for all Fill Sensors to be triggered once filling begins
+  while ( ! allFillSensorsTriggered() && fillingInProgress ) {
+    delay(500);
+  }
+  
   // If we are done filling, rase filling tubes, move the beer belt for next batch and reset the triggers to start all over again.
   if ( allFillSensorsTriggered() && fillingInProgress ) {
     raiseFillerTubes();
