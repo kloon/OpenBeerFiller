@@ -172,12 +172,15 @@ void moveBeerBelt() {
 void readFillSensors() {
   if(digitalRead(BEER_FILL_SENSOR_1)) {
     fillSensor1Triggered = true;
+    digitalWrite(BEER_INLET_SOL_1, LOW);
   }
   if(digitalRead(BEER_FILL_SENSOR_2)) {
     fillSensor2Triggered = true;
+    digitalWrite(BEER_INLET_SOL_2, LOW);
   }
   if(digitalRead(BEER_FILL_SENSOR_3)) {
     fillSensor3Triggered = true;
+    digitalWrite(BEER_INLET_SOL_3, LOW);
   }
   delay(500);
 }
