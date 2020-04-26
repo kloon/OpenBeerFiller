@@ -185,7 +185,6 @@ void readFillSensors() {
     digitalWrite(BEER_INLET_SOL_3, LOW);
     Serial.println("Filler tube 3 closed");
   }
-  delay(500);
 }
 
 /**
