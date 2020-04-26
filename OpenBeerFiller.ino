@@ -136,7 +136,7 @@ void purgeCO2() {
  */
 void raiseFillerTubes() {
   Serial.println("Raising filler tubes");
-  digitalWrite(FILL_RAIL_SOL, LOW);
+  digitalWrite(FILL_RAIL_SOL, HIGH);
   delay (WAIT_FOR_TUBES);
   // We might need to add a delay here depending on how long it takes to fully raise the tubes.
 }
@@ -146,7 +146,7 @@ void raiseFillerTubes() {
  */
 void lowerFillerTubes() {
   Serial.println("Lowering filler tubes");
-  digitalWrite(FILL_RAIL_SOL, HIGH);
+  digitalWrite(FILL_RAIL_SOL, LOW);
   delay (WAIT_FOR_TUBES);
   // We might need to add a delay here depending on how long it takes to fully lower the tubes.
 }
