@@ -129,10 +129,14 @@ void openBeerInlets() {
 /**
  * Open the CO2 purge solenoid, wait a while and then close it again.
  */
-void purgeCO2() {
+void purgeCO2( bool retract = false ) {
   Serial.println( "Purging CO2" );
   digitalWrite(CO2_PURGE_SOL, HIGH);
-  delay(PURGE_CO2_PERIOD);
+  if(!retract) {
+    delay(CO2_PURGE_PERIOD);
+  } else {
+    delay(CO2_PURGE_RETRACTION_PERIOD);
+  }
   digitalWrite(CO2_PURGE_SOL, LOW);
 }
 
@@ -142,8 +146,7 @@ void purgeCO2() {
 void raiseFillerTubes() {
   Serial.println("Raising filler tubes");
   digitalWrite(FILL_RAIL_SOL, HIGH);
-  delay (WAIT_FOR_TUBES);
-  // We might need to add a delay here depending on how long it takes to fully raise the tubes.
+  delay (CO2_PURGE_RETRACTION_DELAY); // We use CO2_PURGE_RETRACTION_DELAY here as we want to start purging with CO2 as the fill rail raises.
 }
 
 /**
@@ -152,7 +155,7 @@ void raiseFillerTubes() {
 void lowerFillerTubes() {
   Serial.println("Lowering filler tubes");
   digitalWrite(FILL_RAIL_SOL, LOW);
-  delay (WAIT_FOR_TUBES);
+  delay (FILLER_TUBE_MOVEMENT_DELAY);
   // We might need to add a delay here depending on how long it takes to fully lower the tubes.
 }
 
@@ -222,6 +225,7 @@ void loop() {
   // If we are done filling, rase filling tubes, move the beer belt for next batch and reset the triggers to start all over again.
   if ( allFillSensorsTriggered() && fillingInProgress ) {
     raiseFillerTubes();
+    purgeCO2(true);
     resetFillSensorTriggers();
   }
 }
