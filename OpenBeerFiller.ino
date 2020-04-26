@@ -57,6 +57,11 @@ void setupPins() {
   pinMode(CO2_PURGE_SOL, OUTPUT);
   pinMode(FILL_RAIL_SOL, OUTPUT);
   pinMode(BEER_BELT_SOL, OUTPUT);
+
+  // Fill sensors.
+  pinMode(BEER_FILL_SENSOR_1, INPUT);
+  pinMode(BEER_FILL_SENSOR_2, INPUT);
+  pinMode(BEER_FILL_SENSOR_3, INPUT);
 }
 
 /**
@@ -161,6 +166,21 @@ void moveBeerBelt() {
   digitalWrite(BEER_BELT_SOL, LOW);
 }
 
+/**
+ * Read if the filler tube sensors have been triggered.
+ */
+void readFillSensors() {
+  if(digitalRead(BEER_FILL_SENSOR_1)) {
+    fillSensor1Triggered = true;
+  }
+  if(digitalRead(BEER_FILL_SENSOR_2)) {
+    fillSensor2Triggered = true;
+  }
+  if(digitalRead(BEER_FILL_SENSOR_3)) {
+    fillSensor3Triggered = true;
+  }
+  delay(500);
+}
 
 /**
  * Main setup routine.
@@ -168,7 +188,7 @@ void moveBeerBelt() {
 void setup() {
   Serial.begin(9600);
   setupPins();
-  setupInterrupts();
+  //setupInterrupts();
   raiseFillerTubes();
 }
 
@@ -181,7 +201,7 @@ void loop() {
   while(digitalRead(START_BUTTON)==LOW) {  Serial.println( "Waiting For Start Button" ); } // Yout will need to prees the start button for every run.
   // Move items into the filling area 
    moveBeerBelt();
-// The program will get stopped in this while() loop as untill the start button is pressed.
+  // The program will get stopped in this while() loop as untill the start button is pressed.
   // Lets assume the belt has bottles and there are empty bottles underneath the filler tubes.
   if ( ! allFillSensorsTriggered() && ! fillingInProgress ) {
     lowerFillerTubes();
@@ -189,9 +209,9 @@ void loop() {
     openBeerInlets();  
   }
 
-//Wait Here for all Fill Sensors to be triggered once filling begins
+  //Wait here for all Fill Sensors to be triggered once filling begins.
   while ( ! allFillSensorsTriggered() && fillingInProgress ) {
-    delay(500);
+    readFillSensors();
   }
   
   // If we are done filling, rase filling tubes, move the beer belt for next batch and reset the triggers to start all over again.
