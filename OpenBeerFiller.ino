@@ -173,14 +173,17 @@ void readFillSensors() {
   if(digitalRead(BEER_FILL_SENSOR_1)) {
     fillSensor1Triggered = true;
     digitalWrite(BEER_INLET_SOL_1, LOW);
+    Serial.println("Filler tube 1 closed");
   }
   if(digitalRead(BEER_FILL_SENSOR_2)) {
     fillSensor2Triggered = true;
     digitalWrite(BEER_INLET_SOL_2, LOW);
+    Serial.println("Filler tube 2 closed");
   }
   if(digitalRead(BEER_FILL_SENSOR_3)) {
     fillSensor3Triggered = true;
     digitalWrite(BEER_INLET_SOL_3, LOW);
+    Serial.println("Filler tube 3 closed");
   }
   delay(500);
 }
