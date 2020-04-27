@@ -14,3 +14,7 @@ digitalWrite(StartButtonLED, HIGH);
 // -Probably depends on the volume of the steel below the top of the fluid (thickness of the pipe walls etc) may not be an issue but the
 // cans I've looked at tonight have very little unfilled space. Its just really something to keep in mind. The beer still in the pipe may
 // be enough todo it as it drops out on the raise. 
+
+// Just noticed this file..  I guess this is where we keep track of ideas/suggestions.  I created an "Issue" earlier for a 
+// "all stop" feature.  The idea is that you should be able stop the machine at any time.  Example...  what if you're filling
+// and you spring a leak or something..  Or some how a can is not aligned properly and causes a jam etc... etc...
