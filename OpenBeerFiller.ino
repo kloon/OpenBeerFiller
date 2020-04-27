@@ -196,8 +196,22 @@ void readFillSensors() {
 void setup() {
   Serial.begin(9600);
   setupPins();
+  resetunit();
   //setupInterrupts();
   raiseFillerTubes();
+}
+/**
+* Reset the unit,
+*/
+void resetunit() {
+digitalWrite(BEER_INLET_SOL_1, LOW);
+digitalWrite(BEER_INLET_SOL_2, LOW);
+digitalWrite(BEER_INLET_SOL_3, LOW);
+digitalWrite(BEER_BELT_SOL, LOW);
+digitalWrite(FILL_RAIL_SOL, HIGH);
+digitalWrite(CO2_PURGE_SOL, LOW);
+Serial.println("Reseting Unit");
+delay(MOVE_BEER_BELT_PERIOD); // just for testing
 }
 
 /**
