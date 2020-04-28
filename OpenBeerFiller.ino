@@ -20,6 +20,7 @@
  */
 #pragma once;
 
+#include "TimerOne.h";
 #include "Config.h";
 #include "InputConfig.h";
 
@@ -62,6 +63,14 @@ void setupPins() {
   pinMode(BEER_FILL_SENSOR_1, INPUT);
   pinMode(BEER_FILL_SENSOR_2, INPUT);
   pinMode(BEER_FILL_SENSOR_3, INPUT);
+}
+
+/**
+ * Setup a non-blocking interrupt timer for checking the fill sensors.
+ */
+void setupFillSensorsTimer() {
+  Timer1.initialize(FILL_SENSORS_TIMER_DELAY);
+  Timer1.attachInterrupt(checkFillSensors);
 }
 
 /**
@@ -116,14 +125,21 @@ void resetFillSensorTriggers() {
 }
 
 /**
- * Open all beer inlet solenoids.
+ * Open all beer filler solenoids.
  */
-void openBeerInlets() {
-  Serial.println( "Opening all beer inlets" );
+void openBeerFillerTubes() {
+  Serial.println( "Opening all beer filler tubes" );
   digitalWrite(BEER_INLET_SOL_1, HIGH);
   digitalWrite(BEER_INLET_SOL_2, HIGH);
   digitalWrite(BEER_INLET_SOL_3, HIGH);
   fillingInProgress = true;
+}
+
+/**
+ * Close all beer filler solenoids.
+ */
+void closeBeerFillerTubes() {
+  
 }
 
 /**
@@ -170,9 +186,9 @@ void moveBeerBelt() {
 }
 
 /**
- * Read if the filler tube sensors have been triggered.
+ * Check if the fill sensors have been triggered.
  */
-void readFillSensors() {
+void checkFillSensors() {
   if(digitalRead(BEER_FILL_SENSOR_1)) {
     fillSensor1Triggered = true;
     digitalWrite(BEER_INLET_SOL_1, LOW);
@@ -191,27 +207,26 @@ void readFillSensors() {
 }
 
 /**
+ * Reset the unit,
+ */
+void resetUnit() {
+  Serial.println("Reseting unit");
+  closeBeerFillerTubes();
+  digitalWrite(BEER_BELT_SOL, LOW);
+  raiseFillerTubes();
+  digitalWrite(CO2_PURGE_SOL, LOW);
+  delay(MOVE_BEER_BELT_PERIOD); // just for testing
+  Serial.println("Done resetting unit");
+}
+
+/**
  * Main setup routine.
  */
 void setup() {
   Serial.begin(9600);
   setupPins();
-  resetunit();
-  //setupInterrupts();
-  //raiseFillerTubes();
-}
-/**
-* Reset the unit,
-*/
-void resetunit() {
-digitalWrite(BEER_INLET_SOL_1, LOW);
-digitalWrite(BEER_INLET_SOL_2, LOW);
-digitalWrite(BEER_INLET_SOL_3, LOW);
-digitalWrite(BEER_BELT_SOL, LOW);
-digitalWrite(FILL_RAIL_SOL, HIGH);
-digitalWrite(CO2_PURGE_SOL, LOW);
-Serial.println("Reseting Unit");
-delay(MOVE_BEER_BELT_PERIOD); // just for testing
+  setupFillSensorsTimer();
+  resetUnit();
 }
 
 /**
@@ -228,12 +243,7 @@ void loop() {
   if ( ! allFillSensorsTriggered() && ! fillingInProgress ) {
     lowerFillerTubes();
     purgeCO2();
-    openBeerInlets();  
-  }
-
-  //Wait here for all Fill Sensors to be triggered once filling begins.
-  while ( ! allFillSensorsTriggered() && fillingInProgress ) {
-    readFillSensors();
+    openBeerFillerTubes();
   }
   
   // If we are done filling, rase filling tubes, move the beer belt for next batch and reset the triggers to start all over again.
