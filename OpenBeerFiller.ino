@@ -41,21 +41,27 @@ ProgramState currentState = UNDEF;
  * ***************************************************************************
  */
 void setupPins() {
-  // Beer inlet solenoids
-  pinMode(START_BUTTON, INPUT);
+  // Filler solenoids.
   pinMode(BEER_INLET_SOL_1, OUTPUT);
   pinMode(BEER_INLET_SOL_2, OUTPUT);
   pinMode(BEER_INLET_SOL_3, OUTPUT);
 
-  // Other solenoids controlling various things.
+  // CO2 solenoid.
   pinMode(CO2_PURGE_SOL, OUTPUT);
+
+  // Fill rail solenoid.
   pinMode(FILL_RAIL_SOL, OUTPUT);
+
+  // Beer belt solenoid.
   pinMode(BEER_BELT_SOL, OUTPUT);
 
   // Fill sensors.
   pinMode(BEER_FILL_SENSOR_1, INPUT);
   pinMode(BEER_FILL_SENSOR_2, INPUT);
   pinMode(BEER_FILL_SENSOR_3, INPUT);
+
+  // Start/Stop button.
+  pinMode(START_BUTTON, INPUT);
 }
 
 /**
@@ -64,6 +70,21 @@ void setupPins() {
 void setupFillSensorsTimer() {
   Timer1.initialize(FILL_SENSORS_TIMER_DELAY);
   Timer1.attachInterrupt(checkFillSensors);
+}
+
+/**
+ * Check if the fill sensors have been triggered.
+ */
+void checkFillSensors() {
+  if(digitalRead(BEER_FILL_SENSOR_1)) {
+    triggerFullFillSensor1();
+  }
+  if(digitalRead(BEER_FILL_SENSOR_2)) {
+    triggerFullFillSensor2();
+  }
+  if(digitalRead(BEER_FILL_SENSOR_3)) {
+    triggerFullFillSensor3();
+  }
 }
 
 /**
@@ -122,7 +143,7 @@ void closeBeerFillerTube(int fillerTubePin) {
  * Open all beer filler solenoids.
  */
 void openAllBeerFillerTubes() {
-  Serial.println( "Opening all beer filler tubes" );
+  Serial.println("Opening all beer filler tubes");
   digitalWrite(BEER_INLET_SOL_1, HIGH);
   digitalWrite(BEER_INLET_SOL_2, HIGH);
   digitalWrite(BEER_INLET_SOL_3, HIGH);
@@ -132,7 +153,7 @@ void openAllBeerFillerTubes() {
  * Close all beer filler solenoids.
  */
 void closeAllBeerFillerTubes() {
-  Serial.println( "Closing all beer filler tubes" );
+  Serial.println("Closing all beer filler tubes");
   digitalWrite(BEER_INLET_SOL_1, LOW);
   digitalWrite(BEER_INLET_SOL_2, LOW);
   digitalWrite(BEER_INLET_SOL_3, LOW);
@@ -142,7 +163,7 @@ void closeAllBeerFillerTubes() {
  * Open the CO2 purge solenoid, wait a while and then close it again.
  */
 void purgeCO2( bool retract = false ) {
-  Serial.println( "Purging CO2" );
+  Serial.println("Purging CO2");
   digitalWrite(CO2_PURGE_SOL, HIGH);
   if(!retract) {
     delay(CO2_PURGE_PERIOD);
@@ -158,7 +179,7 @@ void purgeCO2( bool retract = false ) {
 void raiseFillerTubes() {
   Serial.println("Raising filler tubes");
   digitalWrite(FILL_RAIL_SOL, HIGH);
-  delay (CO2_PURGE_RETRACTION_DELAY); // We use CO2_PURGE_RETRACTION_DELAY here as we want to start purging with CO2 as the fill rail raises.
+  delay(CO2_PURGE_RETRACTION_DELAY); // We use CO2_PURGE_RETRACTION_DELAY here as we want to start purging with CO2 as the fill rail raises.
 }
 
 /**
@@ -167,8 +188,7 @@ void raiseFillerTubes() {
 void lowerFillerTubes() {
   Serial.println("Lowering filler tubes");
   digitalWrite(FILL_RAIL_SOL, LOW);
-  delay (FILLER_TUBE_MOVEMENT_DELAY);
-  // We might need to add a delay here depending on how long it takes to fully lower the tubes.
+  delay(FILLER_TUBE_MOVEMENT_DELAY);
 }
 
 /**
@@ -179,21 +199,6 @@ void moveBeerBelt() {
   digitalWrite(BEER_BELT_SOL, HIGH);
   delay(MOVE_BEER_BELT_PERIOD);
   digitalWrite(BEER_BELT_SOL, LOW);
-}
-
-/**
- * Check if the fill sensors have been triggered.
- */
-void checkFillSensors() {
-  if(digitalRead(BEER_FILL_SENSOR_1)) {
-    triggerFullFillSensor1();
-  }
-  if(digitalRead(BEER_FILL_SENSOR_2)) {
-    triggerFullFillSensor2();
-  }
-  if(digitalRead(BEER_FILL_SENSOR_3)) {
-    triggerFullFillSensor3();
-  }
 }
 
 /**
@@ -225,7 +230,7 @@ void fillingState() {
  * Code to run when we are in the STOP ProgramState.
  */
 void stopState() {
-  // Reset the ProgramState to UNDEF
+  // Reset the ProgramState to UNDEF.
   currentState = UNDEF;
 }
 
@@ -251,7 +256,6 @@ void resetUnit() {
   digitalWrite(BEER_BELT_SOL, LOW);
   raiseFillerTubes();
   digitalWrite(CO2_PURGE_SOL, LOW);
-  delay(MOVE_BEER_BELT_PERIOD); // just for testing
   Serial.println("Done resetting unit");
 }
 
