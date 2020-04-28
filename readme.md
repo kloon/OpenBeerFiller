@@ -1,4 +1,5 @@
 # Open Beer Filler
+![](https://github.com/kloon/OpenBeerFiller/workflows/Compile%20Test/badge.svg)
 This application is a Arduino/ESP based beer filling controller. The idea was started by Christopher Harrison-Hawkes AKA HarryBrew69 on YouTube. This application work by controlling a beer bottling line via a microcrontoller and various sensors.
 
 ## Configuration
