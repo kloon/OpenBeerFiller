@@ -24,10 +24,6 @@
 #include "Config.h";
 #include "InputConfig.h";
 
-#ifndef ICACHE_RAM_ATTR
-#define ICACHE_RAM_ATTR     __attribute__((section(".iram.text")))
-#endif
-
 /**
  * ***************************************************************************
  * ******************************* VARIABLES *********************************
@@ -37,10 +33,6 @@ bool fillSensor1Triggered = false;
 bool fillSensor2Triggered = false;
 bool fillSensor3Triggered = false;
 bool fillingInProgress = false;
-
-void ICACHE_RAM_ATTR triggerFullFillSensor1();
-void ICACHE_RAM_ATTR triggerFullFillSensor2();
-void ICACHE_RAM_ATTR triggerFullFillSensor3();
 
 /**
  * ***************************************************************************
@@ -71,16 +63,6 @@ void setupPins() {
 void setupFillSensorsTimer() {
   Timer1.initialize(FILL_SENSORS_TIMER_DELAY);
   Timer1.attachInterrupt(checkFillSensors);
-}
-
-/**
- * Use iterrupts to trigger when a fill sensor is triggered.
- */
-void setupInterrupts() {
-  // Fire these functions when bottles are full.
-  attachInterrupt(digitalPinToInterrupt(BEER_FILL_SENSOR_1), triggerFullFillSensor1, RISING);
-  attachInterrupt(digitalPinToInterrupt(BEER_FILL_SENSOR_2), triggerFullFillSensor2, RISING);
-  attachInterrupt(digitalPinToInterrupt(BEER_FILL_SENSOR_3), triggerFullFillSensor3, RISING);
 }
 
 /**
@@ -233,9 +215,8 @@ void setup() {
  * The main program loop, where all the magic comes togetger.
  */
 void loop() {
-  // What do we want to do when the program starts? We cannot just start pouring beer????
-  // Start the process.
-  while(digitalRead(START_BUTTON)==LOW) {  Serial.println( "Waiting For Start Button" ); } // Yout will need to prees the start button for every run.
+  // Wait for start button to be pressed before starting.
+  while(digitalRead(START_BUTTON)==LOW) {  Serial.println( "Waiting For Start Button" ); } // You will need to press the start button for every run.
   // Move items into the filling area 
    moveBeerBelt();
   // The program will get stopped in this while() loop as untill the start button is pressed.
