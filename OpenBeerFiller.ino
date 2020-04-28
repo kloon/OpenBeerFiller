@@ -20,7 +20,7 @@
  */
 #pragma once;
 
-#include "TimerOne.h";
+#include <TimerOne.h>;
 #include "Config.h";
 #include "InputConfig.h";
 
@@ -32,7 +32,8 @@
 bool fillSensor1Triggered = false;
 bool fillSensor2Triggered = false;
 bool fillSensor3Triggered = false;
-bool fillingInProgress = false;
+enum ProgramState {UNDEF,START,FILLING,STOP};
+ProgramState currentState = UNDEF;
 
 /**
  * ***************************************************************************
@@ -69,30 +70,27 @@ void setupFillSensorsTimer() {
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor1() {
-  Serial.println( "Beer fill sensor 1 triggered" );
-  // Close beer inlet solenoid.
-  digitalWrite(BEER_INLET_SOL_1, LOW);
+  closeBeerFillerTube(BEER_INLET_SOL_1);
   fillSensor1Triggered = true;
+  Serial.println("Filler tube 1 closed");
 }
 
 /**
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor2() {
-  Serial.println( "Beer fill sensor 2 triggered" );
-  // Close beer inlet solenoid.
-  digitalWrite(BEER_INLET_SOL_2, LOW);
+  closeBeerFillerTube(BEER_INLET_SOL_2);
   fillSensor2Triggered = true;
+  Serial.println("Filler tube 2 closed");
 }
 
 /**
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor3() {
-  Serial.println( "Beer fill sensor 3 triggered" );
-  // Close beer inlet solenoid.
-  digitalWrite(BEER_INLET_SOL_3, LOW);
+  closeBeerFillerTube(BEER_INLET_SOL_3);
   fillSensor3Triggered = true;
+  Serial.println("Filler tube 3 closed");
 }
 
 /**
@@ -103,25 +101,41 @@ bool allFillSensorsTriggered() {
 }
 
 void resetFillSensorTriggers() {
-  fillSensor1Triggered = fillSensor2Triggered = fillSensor3Triggered = fillingInProgress = false;
+  fillSensor1Triggered = fillSensor2Triggered = fillSensor3Triggered = false;
+}
+
+/**
+ * Open a single beer filler solenoid.
+ */
+void openBeerFillerTube(int fillerTubePin) {
+  digitalWrite(fillerTubePin, HIGH);
+}
+
+/**
+ * Close a single beer filler solenoid.
+ */
+void closeBeerFillerTube(int fillerTubePin) {
+  digitalWrite(fillerTubePin, LOW);
 }
 
 /**
  * Open all beer filler solenoids.
  */
-void openBeerFillerTubes() {
+void openAllBeerFillerTubes() {
   Serial.println( "Opening all beer filler tubes" );
   digitalWrite(BEER_INLET_SOL_1, HIGH);
   digitalWrite(BEER_INLET_SOL_2, HIGH);
   digitalWrite(BEER_INLET_SOL_3, HIGH);
-  fillingInProgress = true;
 }
 
 /**
  * Close all beer filler solenoids.
  */
-void closeBeerFillerTubes() {
-  
+void closeAllBeerFillerTubes() {
+  Serial.println( "Closing all beer filler tubes" );
+  digitalWrite(BEER_INLET_SOL_1, LOW);
+  digitalWrite(BEER_INLET_SOL_2, LOW);
+  digitalWrite(BEER_INLET_SOL_3, LOW);
 }
 
 /**
@@ -172,19 +186,59 @@ void moveBeerBelt() {
  */
 void checkFillSensors() {
   if(digitalRead(BEER_FILL_SENSOR_1)) {
-    fillSensor1Triggered = true;
-    digitalWrite(BEER_INLET_SOL_1, LOW);
-    Serial.println("Filler tube 1 closed");
+    triggerFullFillSensor1();
   }
   if(digitalRead(BEER_FILL_SENSOR_2)) {
-    fillSensor2Triggered = true;
-    digitalWrite(BEER_INLET_SOL_2, LOW);
-    Serial.println("Filler tube 2 closed");
+    triggerFullFillSensor2();
   }
   if(digitalRead(BEER_FILL_SENSOR_3)) {
-    fillSensor3Triggered = true;
-    digitalWrite(BEER_INLET_SOL_3, LOW);
-    Serial.println("Filler tube 3 closed");
+    triggerFullFillSensor3();
+  }
+}
+
+/**
+ * Code to run when we are in the START ProgramState.
+ */
+void startState() {
+  moveBeerBelt();
+  lowerFillerTubes();
+  purgeCO2();
+  openAllBeerFillerTubes();
+  currentState = FILLING;
+}
+
+/**
+ * Code to run when we are in the FILLING ProgramState.
+ */
+void fillingState() {
+  // Check if we are done filling.
+  if(allFillSensorsTriggered()){
+    raiseFillerTubes();
+    purgeCO2(true);
+    resetFillSensorTriggers();
+    // If done filling, reset ProgramState to START so it repeats the filling process again.
+    currentState = START;
+  }
+}
+
+/**
+ * Code to run when we are in the STOP ProgramState.
+ */
+void stopState() {
+  // Reset the ProgramState to UNDEF
+  currentState = UNDEF;
+}
+
+void readStartButton() {
+  if(
+    HIGH==digitalRead(START_BUTTON)
+    && UNDEF==currentState
+  ) {
+    currentState = START;
+  } else if(HIGH==digitalRead(START_BUTTON)) {
+    // Handle a graceful stop when pressing the start button again while program is running.
+    resetUnit();
+    currentState = UNDEF;
   }
 }
 
@@ -193,7 +247,7 @@ void checkFillSensors() {
  */
 void resetUnit() {
   Serial.println("Reseting unit");
-  closeBeerFillerTubes();
+  closeAllBeerFillerTubes();
   digitalWrite(BEER_BELT_SOL, LOW);
   raiseFillerTubes();
   digitalWrite(CO2_PURGE_SOL, LOW);
@@ -209,28 +263,26 @@ void setup() {
   setupPins();
   setupFillSensorsTimer();
   resetUnit();
+  Serial.println("Press Start Button to proceed");
 }
 
 /**
  * The main program loop, where all the magic comes togetger.
  */
 void loop() {
-  // Wait for start button to be pressed before starting.
-  while(digitalRead(START_BUTTON)==LOW) {  Serial.println( "Waiting For Start Button" ); } // You will need to press the start button for every run.
-  // Move items into the filling area 
-   moveBeerBelt();
-  // The program will get stopped in this while() loop as untill the start button is pressed.
-  // Lets assume the belt has bottles and there are empty bottles underneath the filler tubes.
-  if ( ! allFillSensorsTriggered() && ! fillingInProgress ) {
-    lowerFillerTubes();
-    purgeCO2();
-    openBeerFillerTubes();
-  }
-  
-  // If we are done filling, rase filling tubes, move the beer belt for next batch and reset the triggers to start all over again.
-  if ( allFillSensorsTriggered() && fillingInProgress ) {
-    raiseFillerTubes();
-    purgeCO2(true);
-    resetFillSensorTriggers();
+  switch(currentState) {
+    case START:
+      startState();
+      break;
+    case FILLING:
+      fillingState();
+      break;
+    case STOP:
+      stopState();
+      break;
+    default:
+      // Lets do our button reads here.
+      readStartButton();
+      break;
   }
 }
