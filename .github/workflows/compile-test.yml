@@ -31,7 +31,7 @@ jobs:
           # variable `fqbn` is set to "arduino:samd:nano_33_iot".
           - arduino-platform: "arduino:avr"
             fqbn: "arduino:avr:uno"
-            libs: ["TimerOne"]
+            libs: "TimerOne"
         operating-system: [ubuntu-latest, windows-latest]
 
     # This is the platform GitHub will use to run our workflow, we
