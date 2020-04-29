@@ -30,6 +30,9 @@ FILLER_TUBE_MOVEMENT_DELAY | How long in milliseconds to wait after raising/lowe
 MOVE_BEER_BELT_PERIOD | How long in milliseconds to run the beer belt solenoid for, ie how long should the beer belt move.
 FILL_SENSORS_TIMER_DELAY | How often in the background should the timer check the Fill sensors' status, defaults to every 100ms.
 
+### Required Libraries
+- [TimerOne](https://playground.arduino.cc/Code/Timer1/)
+
 ## Schematic
 ![](.github/schematic.png)
 
