@@ -20,7 +20,13 @@
  */
 #pragma once;
 
+// Library includes.
+// AVR(UNO) Libraries.
+#ifdef __AVR__
 #include <TimerOne.h>;
+#endif;
+
+// Project specific includes.
 #include "Config.h";
 #include "InputConfig.h";
 
@@ -29,9 +35,9 @@
  * ******************************* VARIABLES *********************************
  * ***************************************************************************
  */
-bool fillSensor1Triggered = false;
-bool fillSensor2Triggered = false;
-bool fillSensor3Triggered = false;
+volatile bool fillSensor1Triggered = false;
+volatile bool fillSensor2Triggered = false;
+volatile bool fillSensor3Triggered = false;
 enum ProgramState {UNDEF,START,FILLING,STOP};
 ProgramState currentState = UNDEF;
 
