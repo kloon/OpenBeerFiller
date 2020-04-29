@@ -74,7 +74,7 @@ void setupPins() {
  * Setup a non-blocking interrupt timer for checking the fill sensors.
  */
 void setupFillSensorsTimer() {
-  Timer1.initialize(FILL_SENSORS_TIMER_DELAY);
+  Timer1.initialize(FILL_SENSORS_TIMER_FREQUENCY);
   Timer1.attachInterrupt(checkFillSensors);
 }
 
