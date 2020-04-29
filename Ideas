@@ -14,3 +14,11 @@ digitalWrite(StartButtonLED, HIGH);
 // -Probably depends on the volume of the steel below the top of the fluid (thickness of the pipe walls etc) may not be an issue but the
 // cans I've looked at tonight have very little unfilled space. Its just really something to keep in mind. The beer still in the pipe may
 // be enough todo it as it drops out on the raise. 
+
+
+void triggerFullFillSensor1() {
+  Serial.println( "Beer fill sensor 1 triggered" );
+  // Close beer inlet solenoid.
+  digitalWrite(BEER_INLET_SOL_1, LOW)&&((BEER_FILL_SENSOR_1)<400));
+  fillSensor1Triggered = true;
+}
