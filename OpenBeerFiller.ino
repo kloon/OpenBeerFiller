@@ -326,6 +326,9 @@ void setup() {
  */
 void loop() {
   switch(currentState) {
+    default:
+      // Lets do our button reads here.
+      readStartButton();
     case IDLE:
       idleState();
       break;
@@ -337,10 +340,6 @@ void loop() {
       break;
     case STOP:
       stopState();
-      break;
-    default:
-      // Lets do our button reads here.
-      readStartButton();
       break;
   }
 }
