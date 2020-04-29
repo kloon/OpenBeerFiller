@@ -216,6 +216,7 @@ void idleState() {
     Serial.println("Press Start Button to proceed");
     idleMessageDisplayed = true;
   }
+  readStartButton();
 }
 
 /**
@@ -262,7 +263,7 @@ void stopState() {
 void readStartButton() {
   if(
     HIGH==digitalRead(START_BUTTON)
-    && hasProgramState(UNDEF)
+    && hasProgramState(IDLE)
   ) {
     changeProgramState(START);
   } else if(HIGH==digitalRead(START_BUTTON)) {
@@ -326,9 +327,6 @@ void setup() {
  */
 void loop() {
   switch(currentState) {
-    default:
-      // Lets do our button reads here.
-      readStartButton();
     case IDLE:
       idleState();
       break;
