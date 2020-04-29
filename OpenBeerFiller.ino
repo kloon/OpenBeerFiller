@@ -227,8 +227,12 @@ void fillingState() {
     raiseFillerTubes();
     purgeCO2(true);
     resetFillSensorTriggers();
-    // If done filling, reset ProgramState to START so it repeats the filling process again.
-    currentState = START;
+    // If done filling, check if we want to do continuous filling or go back to the UNDEF state.
+    #if defined(CONINUOUS_FILLING)
+      currentState = START;
+    #else
+      currentState = UNDEF;
+    #endif;
   }
 }
 
@@ -236,7 +240,8 @@ void fillingState() {
  * Code to run when we are in the STOP ProgramState.
  */
 void stopState() {
-  // Reset the ProgramState to UNDEF.
+  // Reset the sensors and change ProgramState to UNDEF.
+  resetUnit();
   currentState = UNDEF;
 }
 
@@ -248,8 +253,7 @@ void readStartButton() {
     currentState = START;
   } else if(HIGH==digitalRead(START_BUTTON)) {
     // Handle a graceful stop when pressing the start button again while program is running.
-    resetUnit();
-    currentState = UNDEF;
+    currentState = STOP;
   }
 }
 
