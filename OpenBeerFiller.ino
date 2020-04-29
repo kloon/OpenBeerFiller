@@ -38,7 +38,8 @@
 volatile bool fillSensor1Triggered = false;
 volatile bool fillSensor2Triggered = false;
 volatile bool fillSensor3Triggered = false;
-enum ProgramState {UNDEF,START,FILLING,STOP};
+bool idleMessageDisplayed = false;
+enum ProgramState {UNDEF,IDLE,START,FILLING,STOP};
 ProgramState currentState = UNDEF;
 
 /**
@@ -208,6 +209,16 @@ void moveBeerBelt() {
 }
 
 /**
+ * Code to run when we are in the IDLE ProgramState
+ */
+void idleState() {
+  if (!idleMessageDisplayed) {
+    Serial.println("Press Start Button to proceed");
+    idleMessageDisplayed = true;
+  }
+}
+
+/**
  * Code to run when we are in the START ProgramState.
  */
 void startState() {
@@ -215,7 +226,7 @@ void startState() {
   lowerFillerTubes();
   purgeCO2();
   openAllBeerFillerTubes();
-  currentState = FILLING;
+  changeProgramState(FILLING);
 }
 
 /**
@@ -229,9 +240,9 @@ void fillingState() {
     resetFillSensorTriggers();
     // If done filling, check if we want to do continuous filling or go back to the UNDEF state.
     #if defined(CONINUOUS_FILLING)
-      currentState = START;
+      changeProgramState(START);
     #else
-      currentState = UNDEF;
+      changeProgramState(IDLE);
     #endif;
   }
 }
@@ -242,18 +253,21 @@ void fillingState() {
 void stopState() {
   // Reset the sensors and change ProgramState to UNDEF.
   resetUnit();
-  currentState = UNDEF;
+  changeProgramState(IDLE);
 }
 
+/**
+ * Read the start/stop button on every state
+ */
 void readStartButton() {
   if(
     HIGH==digitalRead(START_BUTTON)
-    && UNDEF==currentState
+    && hasProgramState(UNDEF)
   ) {
-    currentState = START;
+    changeProgramState(START);
   } else if(HIGH==digitalRead(START_BUTTON)) {
     // Handle a graceful stop when pressing the start button again while program is running.
-    currentState = STOP;
+    changeProgramState(STOP);
   }
 }
 
@@ -267,6 +281,28 @@ void resetUnit() {
   raiseFillerTubes();
   digitalWrite(CO2_PURGE_SOL, LOW);
   Serial.println("Done resetting unit");
+  changeProgramState(IDLE);
+}
+
+/**
+ * Change the ProgramState
+ */
+void changeProgramState(ProgramState state) {
+  // Reset the bool to avoid the IDLE state message to repeat continiously.
+  if(IDLE == state ){
+    idleMessageDisplayed = false;
+  }
+  currentState = state;
+}
+
+/**
+ * Check if the currentState matches the passed state.
+ */
+bool hasProgramState(ProgramState state) {
+  if(state == currentState) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -283,7 +319,6 @@ void setup() {
   setupPins();
   setupFillSensorsTimer();
   resetUnit();
-  Serial.println("Press Start Button to proceed");
 }
 
 /**
@@ -291,6 +326,9 @@ void setup() {
  */
 void loop() {
   switch(currentState) {
+    case IDLE:
+      idleState();
+      break;
     case START:
       startState();
       break;
