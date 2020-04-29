@@ -29,6 +29,7 @@ CO2_PURGE_RETRACTION_DELAY | How long in milliseconds to wait before starting CO
 FILLER_TUBE_MOVEMENT_DELAY | How long in milliseconds to wait after raising/lowering filler tube before starting the next action like opening the filling lines.
 MOVE_BEER_BELT_PERIOD | How long in milliseconds to run the beer belt solenoid for, ie how long should the beer belt move.
 FILL_SENSORS_TIMER_DELAY | How often in the background should the timer check the Fill sensors' status, defaults to every 100ms.
+CONINUOUS_FILLING | If this definition is enabled it will put the sketch in continous filling mode, meaning once it is done filling it will auto start with the next batch. This is for production use.
 
 ### Required Libraries
 - [TimerOne](https://playground.arduino.cc/Code/Timer1/)
