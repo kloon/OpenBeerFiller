@@ -32,6 +32,7 @@
  * ******************************* VARIABLES *********************************
  * ***************************************************************************
  */
+bool initialPush = true; /* push the cans for the very first fill */
 bool fillSensor1Triggered = false;
 bool fillSensor2Triggered = false;
 bool fillSensor3Triggered = false;
@@ -221,8 +222,15 @@ void loop() {
   // What do we want to do when the program starts? We cannot just start pouring beer????
   // Start the process.
   while(digitalRead(START_BUTTON)==LOW) {  Serial.println( "Waiting For Start Button" ); } // Yout will need to prees the start button for every run.
-  // Move items into the filling area 
-   moveBeerBelt();
+  
+  // Move cans into the filling area and stop further cans pushes on start button...
+  if (initialPush == true)
+  {
+	  moveBeerBelt();
+	  initialPush = false;
+  }
+  //moveBeerBelt();
+  
   // The program will get stopped in this while() loop as untill the start button is pressed.
   // Lets assume the belt has bottles and there are empty bottles underneath the filler tubes.
   if ( ! allFillSensorsTriggered() && ! fillingInProgress ) {
@@ -241,5 +249,8 @@ void loop() {
     raiseFillerTubes();
     purgeCO2(true);
     resetFillSensorTriggers();
+    
+    //Push the cans clear of filling area once filled...
+    moveBeerBelt();
   }
 }
