@@ -1,4 +1,6 @@
 # Open Beer Filler
+![](https://github.com/kloon/OpenBeerFiller/workflows/Compile%20Test/badge.svg)
+
 Open Beer Filler is an Arduino Uno sketch for controlling a beer filling line. The idea was started by Christopher Harrison-Hawkes AKA [HarryBrew69 on YouTube](https://www.youtube.com/channel/UCIIYTzYpd8D7y816diZB0Dw). The sketch works by controlling a beer bottling line via a Arduino Uno and various sensors.
 
 ## Configuration
