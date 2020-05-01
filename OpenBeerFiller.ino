@@ -264,7 +264,7 @@ void stopState() {
 }
 
 /**
- * Read the start/stop button on every state
+ * Read the start button.
  */
 void readStartButton() {
   if(
@@ -273,6 +273,20 @@ void readStartButton() {
   ) {
     Serial.println("Start Button Pressed");
     changeProgramState(START);
+  }
+}
+
+/**
+ * Read the stop button.
+ */
+void readStopButton() {
+  if(
+    HIGH==digitalRead(START_BUTTON)
+    && !hasProgramState(IDLE)
+    && !hasProgramState(START)
+  ) {
+    Serial.println("Stop Button Pressed");
+    changeProgramState(STOP);
   }
 }
 
@@ -313,6 +327,13 @@ bool hasProgramState(ProgramState state) {
 }
 
 /**
+ * Code in this function must always run, avoid delays in here.
+ */
+void alwaysRun() {
+  readStopButton();
+}
+
+/**
  * ***************************************************************************
  * ***************************** MAIN FUNCTIONS ******************************
  * ***************************************************************************
@@ -322,7 +343,7 @@ bool hasProgramState(ProgramState state) {
  * Main setup routine.
  */
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);//Serial.begin(9600);
   setupPins();
   setupFillSensorsTimer();
   resetUnit();
@@ -346,4 +367,5 @@ void loop() {
       stopState();
       break;
   }
+  alwaysRun();
 }
