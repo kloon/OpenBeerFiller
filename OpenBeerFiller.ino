@@ -63,9 +63,9 @@ void setupPins() {
   pinMode(BEER_BELT_SOL, OUTPUT);
 
   // Fill sensors.
-  pinMode(BEER_FILL_SENSOR_1, INPUT);
-  pinMode(BEER_FILL_SENSOR_2, INPUT);
-  pinMode(BEER_FILL_SENSOR_3, INPUT);
+  pinMode(BEER_FILL_SENSOR_1, OUTPUT);
+  pinMode(BEER_FILL_SENSOR_2, OUTPUT);
+  pinMode(BEER_FILL_SENSOR_3, OUTPUT);
 
   // Start/Stop button.
   pinMode(START_BUTTON, INPUT);
@@ -83,13 +83,17 @@ void setupFillSensorsTimer() {
  * Check if the fill sensors have been triggered.
  */
 void checkFillSensors() {
-  if(digitalRead(BEER_FILL_SENSOR_1)) {
+  Serial.println("Measured values:");
+  Serial.println(analogRead(BEER_FILL_SENSOR_1));
+  if (FILL_SENSORS_TRIGGER > analogRead(BEER_FILL_SENSOR_1)) {
     triggerFullFillSensor1();
   }
-  if(digitalRead(BEER_FILL_SENSOR_2)) {
+  Serial.println(analogRead(BEER_FILL_SENSOR_2));
+  if (FILL_SENSORS_TRIGGER > analogRead(BEER_FILL_SENSOR_2)) {
     triggerFullFillSensor2();
   }
-  if(digitalRead(BEER_FILL_SENSOR_3)) {
+  Serial.println(analogRead(BEER_FILL_SENSOR_3));
+  if (FILL_SENSORS_TRIGGER > analogRead(BEER_FILL_SENSOR_3)) {
     triggerFullFillSensor3();
   }
 }
@@ -232,7 +236,7 @@ void startState() {
   moveBeerBelt();
   lowerFillerTubes();
   purgeCO2();
-  openAllBeerFillerTubes();
+  openAllBeerFillerTubes();  
   changeProgramState(FILLING);
 }
 
