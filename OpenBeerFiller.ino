@@ -98,27 +98,33 @@ void checkFillSensors() {
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor1() {
-  closeBeerFillerTube(BEER_INLET_SOL_1);
-  fillSensor1Triggered = true;
-  Serial.println("Filler tube 1 closed");
+  if (!fillSensor1Triggered) {
+    closeBeerFillerTube(BEER_INLET_SOL_1);
+    fillSensor1Triggered = true;
+    Serial.println("Filler tube 1 closed");
+  }
 }
 
 /**
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor2() {
-  closeBeerFillerTube(BEER_INLET_SOL_2);
-  fillSensor2Triggered = true;
-  Serial.println("Filler tube 2 closed");
+  if (!fillSensor2Triggered) {
+    closeBeerFillerTube(BEER_INLET_SOL_2);
+    fillSensor2Triggered = true;
+    Serial.println("Filler tube 2 closed");
+  }
 }
 
 /**
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor3() {
-  closeBeerFillerTube(BEER_INLET_SOL_3);
-  fillSensor3Triggered = true;
-  Serial.println("Filler tube 3 closed");
+  if (!fillSensor3Triggered) {
+    closeBeerFillerTube(BEER_INLET_SOL_3);
+    fillSensor3Triggered = true;
+    Serial.println("Filler tube 3 closed");
+  }
 }
 
 /**
@@ -265,10 +271,8 @@ void readStartButton() {
     HIGH==digitalRead(START_BUTTON)
     && hasProgramState(IDLE)
   ) {
+    Serial.println("Start Button Pressed");
     changeProgramState(START);
-  } else if(HIGH==digitalRead(START_BUTTON)) {
-    // Handle a graceful stop when pressing the start button again while program is running.
-    changeProgramState(STOP);
   }
 }
 
@@ -290,10 +294,12 @@ void resetUnit() {
  */
 void changeProgramState(ProgramState state) {
   // Reset the bool to avoid the IDLE state message to repeat continiously.
-  if(IDLE == state ){
+  if (IDLE == state){
     idleMessageDisplayed = false;
   }
   currentState = state;
+  Serial.print("Program state changed: ");
+  Serial.println(currentState);
 }
 
 /**
