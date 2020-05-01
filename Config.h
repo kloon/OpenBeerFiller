@@ -28,3 +28,9 @@
 #define FILLER_TUBE_MOVEMENT_DELAY 2000
 #define CO2_PURGE_RETRACTION_DELAY 1000
 #define CO2_PURGE_RETRACTION_PERIOD 500
+#define FILL_SENSORS_TIMER_FREQUENCY 100000 // 100ms This value needs to be defined in microseconds.
+
+/**
+ * Feature flags
+ */
+//#define CONINUOUS_FILLING // Uncomment this to have the filling process repeat for new batch after the current batch has completed it filling.

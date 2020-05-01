@@ -31,6 +31,7 @@ jobs:
           # variable `fqbn` is set to "arduino:samd:nano_33_iot".
           - arduino-platform: "arduino:avr"
             fqbn: "arduino:avr:uno"
+            libs: "TimerOne"
         operating-system: [ubuntu-latest, windows-latest]
 
     # This is the platform GitHub will use to run our workflow, we
@@ -58,4 +59,6 @@ jobs:
       # Finally, we compile the sketch, using the FQBN that was set
       # in the build matrix.
       - name: Compile Sketch
-        run: arduino-cli compile --fqbn ${{ matrix.fqbn }} OpenBeerFiller.ino
+        run: |
+          arduino-cli lib install ${{ matrix.libs }}
+          arduino-cli compile --fqbn ${{ matrix.fqbn }} OpenBeerFiller.ino

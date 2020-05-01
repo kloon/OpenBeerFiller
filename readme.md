@@ -1,9 +1,10 @@
 # Open Beer Filler
 ![](https://github.com/kloon/OpenBeerFiller/workflows/Compile%20Test/badge.svg)
-This application is a Arduino/ESP based beer filling controller. The idea was started by Christopher Harrison-Hawkes AKA HarryBrew69 on YouTube. This application work by controlling a beer bottling line via a microcrontoller and various sensors.
+
+Open Beer Filler is an Arduino Uno sketch for controlling a beer filling line. The idea was started by Christopher Harrison-Hawkes AKA [HarryBrew69 on YouTube](https://www.youtube.com/channel/UCIIYTzYpd8D7y816diZB0Dw). The sketch works by controlling a beer bottling line via a Arduino Uno and various sensors.
 
 ## Configuration
-Before uploading the sketch to your microcontroller be sure to modify the InputConfig.h and Config.h files to map it to your microcontroller pins.
+Before uploading the sketch to your Arduino Uno be sure to modify the InputConfig.h and Config.h files to map it to your microcontroller pins. We have mapped the pins to default so if you follow the Schematic below it should work out of the box.
 
 ### InputConfig.h Definitions
 VARIABLE | DEFINITION
@@ -27,14 +28,24 @@ CO2_PURGE_RETRACTION_PERIOD | How long in milliseconds to purge with CO2 after f
 CO2_PURGE_RETRACTION_DELAY | How long in milliseconds to wait before starting CO2 purge after starting to retract filler tubes.
 FILLER_TUBE_MOVEMENT_DELAY | How long in milliseconds to wait after raising/lowering filler tube before starting the next action like opening the filling lines.
 MOVE_BEER_BELT_PERIOD | How long in milliseconds to run the beer belt solenoid for, ie how long should the beer belt move.
+FILL_SENSORS_TIMER_DELAY | How often in the background should the timer check the Fill sensors' status, defaults to every 100ms.
+CONINUOUS_FILLING | If this definition is enabled it will put the sketch in continous filling mode, meaning once it is done filling it will auto start with the next batch. This is for production use.
+
+### Required Libraries
+- [TimerOne](https://playground.arduino.cc/Code/Timer1/)
 
 ## Schematic
 ![](.github/schematic.png)
 
+## Feature Requests
+At present the sketch only supports the Arduino Uno, however we have plans in the works to introduce ESP8266 support with various other nice to have functionality such as remote setup, monitoring and control via a built in web page.
+
+## Open Source
+The project is completely Open Source licensed under the GPL version 3 or above so you are free to use this code as long as you just give attribution. If you have the ability to help us out then please feel free to submit pull requests or even just log issues for bugs or feature request.
+
 ## Troubleshooting
 
-### Adding InputConfig.h & Config.h files to your build
-In you Arduino Sketch folder there is a folder called Libraries, create a folder there and put your header file in that folder and restart the Arduino IDE.
-e.g.
-Documents/Arduino/Libraries/OpenBeerFiller/InputConfig.h
-Documents/Arduino/Libraries/OpenBeerFiller/Config.h
+### Missing InputConfig.h & Config.h files in your build
+If you are getting errors when trying to compile this sketch about missing Config.h and/or InputConfig.h files then it means your Arduino IDE is not picking up these files as part of the sketch. This is likely just an includes folder config error so check your includes folder paths.
+
+It is also possible you are running an outdated version of the Arduino IDE, in that case ensure you are running version 1.8.10+ of the Arduino IDE.
