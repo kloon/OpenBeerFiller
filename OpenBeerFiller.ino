@@ -83,8 +83,6 @@ void setupFillSensorsTimer() {
  * Check if the fill sensors have been triggered.
  */
 void checkFillSensors() {
-  Serial.println("Measured values:");
-  Serial.println(analogRead(BEER_FILL_SENSOR_1));
   if (FILL_SENSORS_TRIGGER < analogRead(BEER_FILL_SENSOR_1)) {
     triggerFullFillSensor1();
   }
