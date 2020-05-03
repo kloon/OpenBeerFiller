@@ -30,6 +30,7 @@ FILLER_TUBE_MOVEMENT_DELAY | How long in milliseconds to wait after raising/lowe
 MOVE_BEER_BELT_PERIOD | How long in milliseconds to run the beer belt solenoid for, ie how long should the beer belt move.
 FILL_SENSORS_TIMER_DELAY | How often in the background should the timer check the Fill sensors' status, defaults to every 100ms.
 CONINUOUS_FILLING | If this definition is enabled it will put the sketch in continous filling mode, meaning once it is done filling it will auto start with the next batch. This is for production use.
+FILL_SENSORS_TRIGGER | Sensitivity of the fill sensors, a value between 0 and 1023 representing the detected voltage.
 
 ### Required Libraries
 - [TimerOne](https://playground.arduino.cc/Code/Timer1/)
