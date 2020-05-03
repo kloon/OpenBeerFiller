@@ -98,7 +98,7 @@ void checkFillSensors() {
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor1() {
-  if (!fillSensor1Triggered) {
+  if (!fillSensor1Triggered && hasProgramState(FILLING)) {
     closeBeerFillerTube(BEER_INLET_SOL_1);
     fillSensor1Triggered = true;
     Serial.println("Filler tube 1 closed");
@@ -109,7 +109,7 @@ void triggerFullFillSensor1() {
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor2() {
-  if (!fillSensor2Triggered) {
+  if (!fillSensor2Triggered && hasProgramState(FILLING)) {
     closeBeerFillerTube(BEER_INLET_SOL_2);
     fillSensor2Triggered = true;
     Serial.println("Filler tube 2 closed");
@@ -120,7 +120,7 @@ void triggerFullFillSensor2() {
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor3() {
-  if (!fillSensor3Triggered) {
+  if (!fillSensor3Triggered && hasProgramState(FILLING)) {
     closeBeerFillerTube(BEER_INLET_SOL_3);
     fillSensor3Triggered = true;
     Serial.println("Filler tube 3 closed");
