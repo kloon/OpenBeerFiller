@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+	<META HTTP-EQUIV="refresh" CONTENT="120">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>OpenBeerFiller Web Front End</title>
+
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+
+  </head>
+  <body onload="getmyvals()">
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="page-header">
+				<h1> OpenBeerFiller Web
+			</div>
+		</div>
+	</div>
+		<div class="col-md-12">
+			<table class="table table-bordered table-sm table-hover">
+				<thead>
+					<tr>
+						<th>
+							#
+						</th>
+						<th>
+							Timer Description
+						</th>
+						<th>
+							Time (ms)
+						</th>
+						<th>
+							
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							1
+						</td>
+						<td>
+							Can Push
+						</td>
+						<td>
+							<input type="number" class="form-control" id="Timer1" onchange="sendmyvals()" />
+						</td>
+						<td>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTp(1)">
+								10+
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTm(1)">
+								10-
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTpp(1)">
+								+100
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTmm(1)">
+								-100
+							</button>
+						</td>
+					</tr>
+					<tr class="table-active">
+						<td>
+							2
+						</td>
+						<td>
+							Can Push Retraction Delay
+						</td>
+						<td>
+							<input type="number" class="form-control" id="Timer2" onchange="sendmyvals()" />
+						</td>
+						<td>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTp(2)">
+								10+
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTm(2)">
+								10-
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTpp(2)">
+								+100
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTmm(2)">
+								-100
+							</button>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td>
+							3
+						</td>
+						<td>
+							Fill Rail Drop Wait
+						</td>
+						<td>
+							<input type="number" class="form-control" id="Timer3" onchange="sendmyvals()" />
+						</td>
+						<td>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTp(3)">
+								10+
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTm(3)">
+								10-
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTpp(3)">
+								+100
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTmm(3)">
+								-100
+							</button>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							4
+						</td>
+						<td>
+							CO2 Purge
+						</td>
+						<td>
+							<input type="number" class="form-control" id="Timer4" onchange="sendmyvals()" />
+						</td>
+						<td>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTp(4)">
+								10+
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTm(4)">
+								10-
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTpp(4)">
+								+100
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTmm(4)">
+								-100
+							</button>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							5
+						</td>
+						<td>
+							CO2 Blast
+						</td>
+						<td>
+							<input type="number" class="form-control" id="Timer5" onchange="sendmyvals()"/>
+						</td>
+						<td>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTp(5)">
+								10+
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTm(5)">
+								10-
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTpp(5)">
+								+100
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTmm(5)">
+								-100
+							</button>
+
+						</td>
+					</tr>
+					<tr>
+						<td>
+							6
+						</td>
+						<td>
+							Fill Rail Raise Wait
+						</td>
+						<td>
+							<input type="number" class="form-control" id="Timer6" onchange="sendmyvals()" />
+						</td>
+						<td>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTp(6)">
+								+10
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTm(6)">
+								-10
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTpp(6)">
+								+100
+							</button>
+							<button type="submit" class="btn btn-primary" onclick="myFuncTmm(6)">
+								-100
+							</button>
+
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<center><button type="submit" class="btn btn-primary" onclick="mySave()">
+				Save settings
+			</button></center><br><br>
+	
+		</div>
+	</div>
+</div>
+<center>
+<label for="fname">Wifi SSID: </label>
+<input type="text" name="Wifi SSID" value="YourAP" id="myAP" onchange="sendmyvals()">
+<label for="fname">password </label>
+<input type="text" name="Wifi SSID" value="yourpassword" id="mypassword"  onchange="sendmyvals()"><br><br>
+<br />
+</center>
+Things still to work out <br />
+1. Sending data to and from OBF
+<br />
+
+<script>
+var x;
+function myFunctionX) {
+     x = document.getElementById("myText").value  
+    
+}
+</script>
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+	<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+  </body>
+  <script>
+
+//function myfuncgetvals()
+//{
+//	setTimeout(function(){ myFuncTq(1); }, 100);
+//	setTimeout(function(){ myFuncTq(2); }, 100);
+//	setTimeout(function(){ myFuncTq(3); }, 100);
+//	setTimeout(function(){ myFuncTq(4); }, 100);
+//	setTimeout(function(){ myFuncTq(5); }, 100);
+//	setTimeout(function(){ myFuncTq(6); }, 100);
+//};
+
+
+
+function myFuncTp(num)
+{
+  var TimerId = "Timer";
+  TimerId = TimerId.concat(String(num));
+  var x = parseInt(document.getElementById(TimerId).value);
+  x = x +10;
+  document.getElementById(TimerId).value = x;
+  sendmyvals();
+};
+
+function myFuncTpp(num)
+{
+  var TimerId = "Timer";
+  TimerId = TimerId.concat(String(num));
+  var x = parseInt(document.getElementById(TimerId).value);
+  x = x +100;
+  document.getElementById(TimerId).value = x;
+  sendmyvals();
+};
+
+
+function myFuncTm(num)
+{
+  var TimerId = "Timer";
+  TimerId = TimerId.concat(String(num));
+  var x = parseInt(document.getElementById(TimerId).value);
+  x = x -10;
+  document.getElementById(TimerId).value = x;
+  sendmyvals();
+};
+
+function myFuncTmm(num)
+{
+  var TimerId = "Timer";
+  TimerId = TimerId.concat(String(num));
+  var x = parseInt(document.getElementById(TimerId).value);
+  x = x -100;
+  document.getElementById(TimerId).value = x;
+  sendmyvals();
+};
+
+
+function myFuncTq(num)
+{
+  var xhr = new XMLHttpRequest();
+  var url = "/t";
+  var TimerId = "Timer";
+  
+  TimerId = TimerId.concat(String(num));
+  url=url.concat(String(num),"q");
+
+  xhr.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      document.getElementById(TimerId).value = this.responseText;
+    }
+  };
+
+  xhr.open("GET", url, true);
+  xhr.send();
+};
+
+function mySave()
+{
+  var xhr = new XMLHttpRequest();
+  var url = "/save";
+
+    xhr.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      alert("Current Settings Saved");
+    }
+  };
+
+  xhr.open("GET", url, true);
+  xhr.send();
+};
+//document.addEventListener('DOMContentLoaded', myFunctionTimer5Up, false);
+
+function mysetup()
+{
+  InitWebSocket();
+  setTimeout(() => {  getmyvals(); }, 500);
+}
+
+
+//---------------------------------------------------------------------------
+//------           Websocket stuff
+function InitWebSocket(){
+    websock=new WebSocket('ws://'+window.location.hostname+':88/')
+    websock.onmessage=function(evt)
+	{
+      JSONobj=JSON.parse(evt.data);
+	  document.getElementById('myAP').value="";
+      document.getElementById('Timer1').value=0;
+      document.getElementById('Timer2').value=0;
+      document.getElementById('Timer3').value=0;
+      document.getElementById('Timer4').value=0;
+      document.getElementById('Timer5').value=0;
+      document.getElementById('Timer6').value=0;
+	  document.getElementById('myAP').value=JSONobj.ssid;
+	  document.getElementById('mypassword').value=JSONobj.password;
+	  document.getElementById('Timer1').value=JSONobj.t1wait;
+      document.getElementById('Timer2').value=JSONobj.t2wait;
+      document.getElementById('Timer3').value=JSONobj.t3wait;
+      document.getElementById('Timer4').value=JSONobj.t4wait;
+      document.getElementById('Timer5').value=JSONobj.t5wait;
+      document.getElementById('Timer6').value=JSONobj.t6wait;
+    }
+}
+
+function sendmyvals(){
+    Timer1Val=document.getElementById('Timer1').value;
+    websock.send('t1wait='+Timer1Val);
+    Timer2Val=document.getElementById('Timer2').value;
+    websock.send('t2wait='+Timer2Val);
+    Timer3Val=document.getElementById('Timer3').value;
+    websock.send('t3wait='+Timer3Val);
+    Timer4Val=document.getElementById('Timer4').value;
+    websock.send('t4wait='+Timer4Val);
+    Timer5Val=document.getElementById('Timer5').value;
+    websock.send('t5wait='+Timer5Val);
+    Timer6Val=document.getElementById('Timer6').value;
+    websock.send('t6wait='+Timer6Val);
+    ssidVal=document.getElementById('myAP').value;
+    websock.send('ssid='+ssidVal);
+    passwordVal=document.getElementById('mypassword').value;
+    websock.send('password='+passwordVal);
+  }
+
+function getmyvals(){
+    CmdVal="update";
+    websock.send('Command='+CmdVal);
+	}
+ 
+ mysetup();
+ 
+</script>
+</html>

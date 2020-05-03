@@ -1,0 +1,9 @@
+{"CfgSsid": "MySsid",
+ "CfgPassword": "myP455w0rd",
+ "CfgT1":2500,
+ "CfgT2":2000,
+ "CfgT3":2000,
+ "CfgT4":3000,
+ "CfgT5":100,
+ "CfgT6":2000
+ }
