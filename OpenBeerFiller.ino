@@ -234,7 +234,7 @@ void startState() {
   moveBeerBelt();
   lowerFillerTubes();
   purgeCO2();
-  openAllBeerFillerTubes();  
+  openAllBeerFillerTubes();
   changeProgramState(FILLING);
 }
 
