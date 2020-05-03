@@ -86,11 +86,9 @@ void checkFillSensors() {
   if (FILL_SENSORS_TRIGGER < analogRead(BEER_FILL_SENSOR_1)) {
     triggerFullFillSensor1();
   }
-  Serial.println(analogRead(BEER_FILL_SENSOR_2));
   if (FILL_SENSORS_TRIGGER < analogRead(BEER_FILL_SENSOR_2)) {
     triggerFullFillSensor2();
   }
-  Serial.println(analogRead(BEER_FILL_SENSOR_3));
   if (FILL_SENSORS_TRIGGER < analogRead(BEER_FILL_SENSOR_3)) {
     triggerFullFillSensor3();
   }
