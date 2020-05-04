@@ -19,23 +19,18 @@
  *
  */
 #pragma once;
+// Project specific includes.
+#include "Config.h";
+#include "InputConfig.h";
 
-// Define Board Type
-//#define BOARD UNO
-#define BOARD ESP32
-
-// Library includes.
-// AVR(UNO) Libraries.
+// Board specific includes/variables.
 #if BOARD == UNO
   #include <TimerOne.h>;
 #elif BOARD == ESP32
   hw_timer_t * timer = NULL;
-  portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 #endif;
 
-// Project specific includes.
-#include "Config.h";
-#include "InputConfig.h";
+
 
 /**
  * ***************************************************************************
@@ -54,14 +49,6 @@ ProgramState currentState = UNDEF;
  * ******************************** FUNCTIONS ********************************
  * ***************************************************************************
  */
-
-#if BOARD == ESP32
-  void IRAM_ATTR onTime() {
-    portENTER_CRITICAL_ISR(&timerMux);
-    checkFillSensors();
-    portEXIT_CRITICAL_ISR(&timerMux);
-  }
-#endif
 
 void setupPins() {
   // Filler solenoids.
@@ -96,7 +83,7 @@ void setupFillSensorsTimer() {
     Timer1.attachInterrupt(checkFillSensors);
   #elif BOARD == ESP32
     timer = timerBegin(0, 80, true);
-    timerAttachInterrupt(timer, &onTime, true);
+    timerAttachInterrupt(timer, &checkFillSensors, true);
     timerAlarmWrite(timer, FILL_SENSORS_TIMER_FREQUENCY, true);      
     timerAlarmEnable(timer);
   #endif

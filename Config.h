@@ -23,6 +23,7 @@
 /**
  * General Config Options
  */
+#define BOARD UNO // Supported boards are UNO, ESP32
 #define CO2_PURGE_PERIOD 2000
 #define MOVE_BEER_BELT_PERIOD 5000
 #define FILLER_TUBE_MOVEMENT_DELAY 2000
