@@ -30,6 +30,7 @@
 #define CO2_PURGE_RETRACTION_PERIOD 500
 #define FILL_SENSORS_TIMER_FREQUENCY 100000 // 100ms This value needs to be defined in microseconds.
 #define FILL_SENSORS_TRIGGER 400 // Int between 0 and 1023 used to trigger the fill sensor: operating voltage(5v or 3.3v) / 1024
+#define NUMBER_OF_FILLERS 3 // Supports 1 to 3 fillers
 
 /**
  * Feature flags

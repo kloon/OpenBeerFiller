@@ -109,7 +109,7 @@ void triggerFullFillSensor1() {
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor2() {
-  if (!fillSensor2Triggered && hasProgramState(FILLING)) {
+  if (!fillSensor2Triggered && hasProgramState(FILLING) && NUMBER_OF_FILLERS > 1) {
     closeBeerFillerTube(BEER_INLET_SOL_2);
     fillSensor2Triggered = true;
     Serial.println("Filler tube 2 closed");
@@ -120,7 +120,7 @@ void triggerFullFillSensor2() {
  * Fired when fill sensor 1 is triggered as full.
  */
 void triggerFullFillSensor3() {
-  if (!fillSensor3Triggered && hasProgramState(FILLING)) {
+  if (!fillSensor3Triggered && hasProgramState(FILLING) && NUMBER_OF_FILLERS > 2) {
     closeBeerFillerTube(BEER_INLET_SOL_3);
     fillSensor3Triggered = true;
     Serial.println("Filler tube 3 closed");
@@ -131,7 +131,14 @@ void triggerFullFillSensor3() {
  * Return whether all fill sensors have been triggered or not.
  */
 bool allFillSensorsTriggered() {
-  return fillSensor1Triggered && fillSensor2Triggered && fillSensor3Triggered;
+  switch(NUMBER_OF_FILLERS) {
+    case 1:
+      return fillSensor1Triggered;
+    case 2:
+      return fillSensor1Triggered && fillSensor2Triggered;
+    case 3:
+      return fillSensor1Triggered && fillSensor2Triggered && fillSensor3Triggered;
+  }
 }
 
 void resetFillSensorTriggers() {
@@ -232,7 +239,20 @@ void startState() {
   moveBeerBelt();
   lowerFillerTubes();
   purgeCO2();
-  openAllBeerFillerTubes();
+  switch(NUMBER_OF_FILLERS) {
+    case 1:
+      openBeerFillerTube(BEER_INLET_SOL_1);
+      break;
+    case 2:
+      openBeerFillerTube(BEER_INLET_SOL_1);
+      openBeerFillerTube(BEER_INLET_SOL_2);
+      break;
+    case 3:
+      openBeerFillerTube(BEER_INLET_SOL_1);
+      openBeerFillerTube(BEER_INLET_SOL_2);
+      openBeerFillerTube(BEER_INLET_SOL_3);
+      break;
+  }
   changeProgramState(FILLING);
 }
 
