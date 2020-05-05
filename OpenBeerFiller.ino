@@ -63,9 +63,9 @@ void setupPins() {
   pinMode(BEER_BELT_SOL, OUTPUT);
 
   // Fill sensors.
-  pinMode(BEER_FILL_SENSOR_1, OUTPUT);
-  pinMode(BEER_FILL_SENSOR_2, OUTPUT);
-  pinMode(BEER_FILL_SENSOR_3, OUTPUT);
+  pinMode(BEER_FILL_SENSOR_1, INPUT);
+  pinMode(BEER_FILL_SENSOR_2, INPUT);
+  pinMode(BEER_FILL_SENSOR_3, INPUT);
 
   // Start/Stop button.
   pinMode(START_BUTTON, INPUT);
