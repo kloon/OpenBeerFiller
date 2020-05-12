@@ -23,13 +23,9 @@
 /**
  * Pin definitions
  */
+const int BEER_INLET_SOL[] = {5, 6, 7}; //Pin numbers of the inlet solenoids
+const byte BEER_FILL_SENSOR[] = {A0, A1, A2}; //Pin numbers of the fill sensors
 #define START_BUTTON 8
-#define BEER_INLET_SOL_1 5
-#define BEER_INLET_SOL_2 6
-#define BEER_INLET_SOL_3 7
-#define BEER_FILL_SENSOR_1 A0
-#define BEER_FILL_SENSOR_2 A1
-#define BEER_FILL_SENSOR_3 A2
 #define CO2_PURGE_SOL 4
 #define FILL_RAIL_SOL 3
 #define BEER_BELT_SOL 2
