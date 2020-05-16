@@ -41,6 +41,7 @@ volatile bool fillSensor3Triggered = false;
 bool idleMessageDisplayed = false;
 enum ProgramState {UNDEF,IDLE,START,FILLING,STOP};
 ProgramState currentState = UNDEF;
+int sensorValue;
 
 /**
  * ***************************************************************************
@@ -66,6 +67,7 @@ void setupPins() {
   pinMode(BEER_FILL_SENSOR_1, INPUT);
   pinMode(BEER_FILL_SENSOR_2, INPUT);
   pinMode(BEER_FILL_SENSOR_3, INPUT);
+  pinMode(BEER_FILL_SENSOR_POT, INPUT);
 
   // Start/Stop button.
   pinMode(START_BUTTON, INPUT);
@@ -83,13 +85,19 @@ void setupFillSensorsTimer() {
  * Check if the fill sensors have been triggered.
  */
 void checkFillSensors() {
-  if (FILL_SENSORS_TRIGGER < analogRead(BEER_FILL_SENSOR_1)) {
+  if (VARIABLE_FILL_SENSOR_TRIGGER) {
+    sensorValue = analogRead(BEER_FILL_SENSOR_POT);
+  } else {
+    sensorValue = FILL_SENSORS_TRIGGER;
+  }
+  Serial.println(sensorValue);
+  if (sensorValue < analogRead(BEER_FILL_SENSOR_1)) {
     triggerFullFillSensor1();
   }
-  if (FILL_SENSORS_TRIGGER < analogRead(BEER_FILL_SENSOR_2)) {
+  if (sensorValue < analogRead(BEER_FILL_SENSOR_2)) {
     triggerFullFillSensor2();
   }
-  if (FILL_SENSORS_TRIGGER < analogRead(BEER_FILL_SENSOR_3)) {
+  if (sensorValue < analogRead(BEER_FILL_SENSOR_3)) {
     triggerFullFillSensor3();
   }
 }
