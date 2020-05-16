@@ -90,7 +90,6 @@ void checkFillSensors() {
   } else {
     sensorValue = FILL_SENSORS_TRIGGER;
   }
-  Serial.println(sensorValue);
   if (sensorValue < analogRead(BEER_FILL_SENSOR_1)) {
     triggerFullFillSensor1();
   }
