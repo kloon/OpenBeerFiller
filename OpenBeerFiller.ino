@@ -29,6 +29,7 @@
 // Project specific includes.
 #include "Config.h";
 #include "InputConfig.h";
+#include "ReprapLCD.h"
 
 /**
  * ***************************************************************************
@@ -40,8 +41,12 @@ volatile bool fillSensor2Triggered = false;
 volatile bool fillSensor3Triggered = false;
 bool idleMessageDisplayed = false;
 enum ProgramState {UNDEF,IDLE,START,FILLING,STOP};
+char ProgramStateText[5][8] = {"UNDEF", "Idle", "Feeding", "Filling", "STOP"};
 ProgramState currentState = UNDEF;
-
+int sensorValue = DEFAULT_FILL_SENSORS_TRIGGER;
+char stateOutput[21];
+char statusOutput[21];
+String fillStatus;
 /**
  * ***************************************************************************
  * ******************************** FUNCTIONS ********************************
@@ -83,13 +88,13 @@ void setupFillSensorsTimer() {
  * Check if the fill sensors have been triggered.
  */
 void checkFillSensors() {
-  if (FILL_SENSORS_TRIGGER < analogRead(BEER_FILL_SENSOR_1)) {
+  if (sensorValue < analogRead(BEER_FILL_SENSOR_1)) {
     triggerFullFillSensor1();
   }
-  if (FILL_SENSORS_TRIGGER < analogRead(BEER_FILL_SENSOR_2)) {
+  if (sensorValue < analogRead(BEER_FILL_SENSOR_2)) {
     triggerFullFillSensor2();
   }
-  if (FILL_SENSORS_TRIGGER < analogRead(BEER_FILL_SENSOR_3)) {
+  if (sensorValue < analogRead(BEER_FILL_SENSOR_3)) {
     triggerFullFillSensor3();
   }
 }
@@ -131,6 +136,8 @@ void triggerFullFillSensor3() {
  * Return whether all fill sensors have been triggered or not.
  */
 bool allFillSensorsTriggered() {
+  fillingDisplay();
+  updateLCD();
   return fillSensor1Triggered && fillSensor2Triggered && fillSensor3Triggered;
 }
 
@@ -177,6 +184,9 @@ void closeAllBeerFillerTubes() {
  */
 void purgeCO2( bool retract = false ) {
   Serial.println("Purging CO2");
+  sprintf(statusOutput, "%s%s", "Status: ", "Purging");
+  updateLine(0, statusOutput);
+  updateLCD();
   digitalWrite(CO2_PURGE_SOL, HIGH);
   if(!retract) {
     delay(CO2_PURGE_PERIOD);
@@ -314,6 +324,8 @@ void changeProgramState(ProgramState state) {
   currentState = state;
   Serial.print("Program state changed: ");
   Serial.println(currentState);
+  sprintf(statusOutput, "%s%s", "Status: ", ProgramStateText[currentState]);
+  updateLine(0, statusOutput);
 }
 
 /**
@@ -333,6 +345,18 @@ void alwaysRun() {
   readStopButton();
 }
 
+void fillingDisplay() {
+  fillStatus = "Status: ";
+  fillStatus += ProgramStateText[3];
+  fillStatus += " ";
+  char statusOutput[21];
+  if (fillSensor1Triggered) { fillStatus +=" "; } else { fillStatus +="1"; }
+  if (fillSensor2Triggered) { fillStatus +=" "; } else { fillStatus +="2"; }
+  if (fillSensor3Triggered) { fillStatus +=" "; } else { fillStatus +="3"; }
+  sprintf(statusOutput, fillStatus.c_str());
+  updateLine(0, statusOutput);
+}
+
 /**
  * ***************************************************************************
  * ***************************** MAIN FUNCTIONS ******************************
@@ -344,6 +368,9 @@ void alwaysRun() {
  */
 void setup() {
   Serial.begin(115200);//Serial.begin(9600);
+  setupLCD();
+  updateLine(0, "Initialising...");
+  updateLCD();
   setupPins();
   setupFillSensorsTimer();
   resetUnit();
@@ -353,6 +380,10 @@ void setup() {
  * The main program loop, where all the magic comes togetger.
  */
 void loop() {
+  sensorValue = rotEncRead();
+  sprintf(stateOutput, "%s%d", "Trigger Value: ", sensorValue);
+  updateLine(1, stateOutput);
+  updateLCD();
   switch(currentState) {
     case IDLE:
       idleState();
