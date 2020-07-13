@@ -29,7 +29,9 @@
 // Project specific includes.
 #include "Config.h";
 #include "InputConfig.h";
+#ifdef ENABLE_REPRAP_LCD
 #include "ReprapLCD.h"
+#endif
 
 /**
  * ***************************************************************************
@@ -43,7 +45,7 @@ bool idleMessageDisplayed = false;
 enum ProgramState {UNDEF,IDLE,START,FILLING,STOP};
 char ProgramStateText[5][8] = {"UNDEF", "Idle", "Feeding", "Filling", "STOP"};
 ProgramState currentState = UNDEF;
-int sensorValue = DEFAULT_FILL_SENSORS_TRIGGER;
+int sensorValue = FILL_SENSOR_TRIGGERS[0];
 char stateOutput[21];
 char statusOutput[21];
 String fillStatus;
@@ -136,8 +138,10 @@ void triggerFullFillSensor3() {
  * Return whether all fill sensors have been triggered or not.
  */
 bool allFillSensorsTriggered() {
+  #ifdef ENABLE_REPRAP_LCD
   fillingDisplay();
   updateLCD();
+  #endif
   return fillSensor1Triggered && fillSensor2Triggered && fillSensor3Triggered;
 }
 
@@ -184,9 +188,11 @@ void closeAllBeerFillerTubes() {
  */
 void purgeCO2( bool retract = false ) {
   Serial.println("Purging CO2");
+  #ifdef ENABLE_REPRAP_LCD
   sprintf(statusOutput, "%s%s", "Status: ", "Purging");
   updateLine(0, statusOutput);
   updateLCD();
+  #endif
   digitalWrite(CO2_PURGE_SOL, HIGH);
   if(!retract) {
     delay(CO2_PURGE_PERIOD);
@@ -324,8 +330,10 @@ void changeProgramState(ProgramState state) {
   currentState = state;
   Serial.print("Program state changed: ");
   Serial.println(currentState);
+  #ifdef ENABLE_REPRAP_LCD
   sprintf(statusOutput, "%s%s", "Status: ", ProgramStateText[currentState]);
   updateLine(0, statusOutput);
+  #endif
 }
 
 /**
@@ -345,18 +353,33 @@ void alwaysRun() {
   readStopButton();
 }
 
+#ifdef ENABLE_REPRAP_LCD
+/**
+ * Display Filling Status on LCD
+ */
 void fillingDisplay() {
   fillStatus = "Status: ";
   fillStatus += ProgramStateText[3];
   fillStatus += " ";
   char statusOutput[21];
+
   if (fillSensor1Triggered) { fillStatus +=" "; } else { fillStatus +="1"; }
   if (fillSensor2Triggered) { fillStatus +=" "; } else { fillStatus +="2"; }
   if (fillSensor3Triggered) { fillStatus +=" "; } else { fillStatus +="3"; }
+
   sprintf(statusOutput, fillStatus.c_str());
   updateLine(0, statusOutput);
 }
 
+/**
+ * Display Trigger Value on LCD
+ */
+void triggerDisplay() {
+  sensorValue = rotEncRead();
+  sprintf(stateOutput, "%s%d", "Trigger Value: ", sensorValue);
+  updateLine(1, stateOutput);
+}
+#endif
 /**
  * ***************************************************************************
  * ***************************** MAIN FUNCTIONS ******************************
@@ -368,9 +391,10 @@ void fillingDisplay() {
  */
 void setup() {
   Serial.begin(115200);//Serial.begin(9600);
+  #ifdef ENABLE_REPRAP_LCD
   setupLCD();
-  updateLine(0, "Initialising...");
   updateLCD();
+  #endif
   setupPins();
   setupFillSensorsTimer();
   resetUnit();
@@ -380,10 +404,11 @@ void setup() {
  * The main program loop, where all the magic comes togetger.
  */
 void loop() {
-  sensorValue = rotEncRead();
-  sprintf(stateOutput, "%s%d", "Trigger Value: ", sensorValue);
-  updateLine(1, stateOutput);
+  #ifdef ENABLE_REPRAP_LCD
+  triggerDisplay();
   updateLCD();
+  #endif
+
   switch(currentState) {
     case IDLE:
       idleState();

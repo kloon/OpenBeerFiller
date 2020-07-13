@@ -33,3 +33,6 @@
 #define CO2_PURGE_SOL 6
 #define FILL_RAIL_SOL 5
 #define BEER_BELT_SOL 4
+#define ROT_ENC_A 2
+#define ROT_ENC_B 3
+#define ROT_ENC_BUTTON 12
