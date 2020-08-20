@@ -29,9 +29,8 @@
 // Project specific includes.
 #include "Config.h";
 #include "InputConfig.h";
-#ifdef ENABLE_REPRAP_LCD
 #include "ReprapLCD.h"
-#endif
+#include "Settings.h"
 
 /**
  * ***************************************************************************
@@ -42,13 +41,11 @@ volatile bool fillSensor1Triggered = false;
 volatile bool fillSensor2Triggered = false;
 volatile bool fillSensor3Triggered = false;
 bool idleMessageDisplayed = false;
-enum ProgramState {UNDEF,IDLE,START,FILLING,STOP};
-char ProgramStateText[5][8] = {"UNDEF", "Idle", "Feeding", "Filling", "STOP"};
+enum ProgramState {UNDEF, IDLE, START, PRE_PURGE, FILLING, POST_PURGE, STOP};
+char ProgramStateText[][8] = {"UNDEF", "Idle", "Feeding", "Purging", "Filling", "Purging",  "Stop"};
 ProgramState currentState = UNDEF;
-int sensorValue = FILL_SENSOR_TRIGGERS[0];
-char stateOutput[21];
-char statusOutput[21];
-String fillStatus;
+int cansFilled = 0;
+
 /**
  * ***************************************************************************
  * ******************************** FUNCTIONS ********************************
@@ -90,13 +87,13 @@ void setupFillSensorsTimer() {
  * Check if the fill sensors have been triggered.
  */
 void checkFillSensors() {
-  if (sensorValue < analogRead(BEER_FILL_SENSOR_1)) {
+  if (EEPROM16_Read(EEPROM_FILL_SENSOR_TRIGGER) < analogRead(BEER_FILL_SENSOR_1)) {
     triggerFullFillSensor1();
   }
-  if (sensorValue < analogRead(BEER_FILL_SENSOR_2)) {
+  if (EEPROM16_Read(EEPROM_FILL_SENSOR_TRIGGER) < analogRead(BEER_FILL_SENSOR_2)) {
     triggerFullFillSensor2();
   }
-  if (sensorValue < analogRead(BEER_FILL_SENSOR_3)) {
+  if (EEPROM16_Read(EEPROM_FILL_SENSOR_TRIGGER) < analogRead(BEER_FILL_SENSOR_3)) {
     triggerFullFillSensor3();
   }
 }
@@ -138,10 +135,6 @@ void triggerFullFillSensor3() {
  * Return whether all fill sensors have been triggered or not.
  */
 bool allFillSensorsTriggered() {
-  #ifdef ENABLE_REPRAP_LCD
-  fillingDisplay();
-  updateLCD();
-  #endif
   return fillSensor1Triggered && fillSensor2Triggered && fillSensor3Triggered;
 }
 
@@ -184,31 +177,12 @@ void closeAllBeerFillerTubes() {
 }
 
 /**
- * Open the CO2 purge solenoid, wait a while and then close it again.
- */
-void purgeCO2( bool retract = false ) {
-  Serial.println("Purging CO2");
-  #ifdef ENABLE_REPRAP_LCD
-  sprintf(statusOutput, "%s%s", "Status: ", "Purging");
-  updateLine(0, statusOutput);
-  updateLCD();
-  #endif
-  digitalWrite(CO2_PURGE_SOL, HIGH);
-  if(!retract) {
-    delay(CO2_PURGE_PERIOD);
-  } else {
-    delay(CO2_PURGE_RETRACTION_PERIOD);
-  }
-  digitalWrite(CO2_PURGE_SOL, LOW);
-}
-
-/**
  * Raise the fillter tubes out of the bottles.
  */
 void raiseFillerTubes() {
   Serial.println("Raising filler tubes");
   digitalWrite(FILL_RAIL_SOL, HIGH);
-  delay(CO2_PURGE_RETRACTION_DELAY); // We use CO2_PURGE_RETRACTION_DELAY here as we want to start purging with CO2 as the fill rail raises.
+  delay(EEPROM16_Read(EEPROM_CO2_POST_PURGE_DELAY)); // We use CO2_POST_PURGE_DELAY here as we want to start purging with CO2 as the fill rail raises.
 }
 
 /**
@@ -217,7 +191,7 @@ void raiseFillerTubes() {
 void lowerFillerTubes() {
   Serial.println("Lowering filler tubes");
   digitalWrite(FILL_RAIL_SOL, LOW);
-  delay(FILLER_TUBE_MOVEMENT_DELAY);
+  delay(EEPROM16_Read(EEPROM_FILLER_TUBE_MOVEMENT_DELAY));
 }
 
 /**
@@ -226,7 +200,7 @@ void lowerFillerTubes() {
 void moveBeerBelt() {
   Serial.println( "Moving beer belt" );
   digitalWrite(BEER_BELT_SOL, HIGH);
-  delay(MOVE_BEER_BELT_PERIOD);
+  delay(EEPROM16_Read(EEPROM_MOVE_BEER_BELT_PERIOD));
   digitalWrite(BEER_BELT_SOL, LOW);
 }
 
@@ -247,7 +221,17 @@ void idleState() {
 void startState() {
   moveBeerBelt();
   lowerFillerTubes();
-  purgeCO2();
+  changeProgramState(PRE_PURGE);
+}
+
+/**
+ * Code to run when we are in the PRE_PURGE ProgramState.
+ */
+void prePurgeState() {
+  Serial.println("Purging CO2");
+  digitalWrite(CO2_PURGE_SOL, HIGH);
+  delay(EEPROM_CO2_PRE_PURGE_PERIOD);
+  digitalWrite(CO2_PURGE_SOL, LOW);
   openAllBeerFillerTubes();
   changeProgramState(FILLING);
 }
@@ -258,16 +242,31 @@ void startState() {
 void fillingState() {
   // Check if we are done filling.
   if(allFillSensorsTriggered()){
+    cansFilled++;
     raiseFillerTubes();
-    purgeCO2(true);
-    resetFillSensorTriggers();
-    // If done filling, check if we want to do continuous filling or go back to the UNDEF state.
-    #if defined(CONINUOUS_FILLING)
-      changeProgramState(START);
-    #else
-      changeProgramState(IDLE);
-    #endif;
+    changeProgramState(POST_PURGE);
   }
+}
+
+/**
+ * Code to run when we are in the POST_PURGE ProgramState.
+ */
+void postPurgeState() {
+  if(CO2_POST_PURGE_PERIOD) {
+    Serial.println("Purging CO2");
+    digitalWrite(CO2_PURGE_SOL, HIGH);
+    delay(EEPROM16_Read(EEPROM_CO2_POST_PURGE_PERIOD));
+    digitalWrite(CO2_PURGE_SOL, LOW);
+  }
+
+  resetFillSensorTriggers();
+
+  // If done filling, check if we want to do continuous filling or go back to the UNDEF state.
+  #if defined(CONTINUOUS_FILLING)
+    changeProgramState(START);
+  #else
+    changeProgramState(IDLE);
+  #endif;
 }
 
 /**
@@ -284,7 +283,7 @@ void stopState() {
  */
 void readStartButton() {
   if(
-    HIGH==digitalRead(START_BUTTON)
+    LOW==digitalRead(START_BUTTON)
     && hasProgramState(IDLE)
   ) {
     Serial.println("Start Button Pressed");
@@ -297,7 +296,7 @@ void readStartButton() {
  */
 void readStopButton() {
   if(
-    HIGH==digitalRead(START_BUTTON)
+    LOW==digitalRead(START_BUTTON)
     && !hasProgramState(IDLE)
     && !hasProgramState(START)
   ) {
@@ -329,11 +328,7 @@ void changeProgramState(ProgramState state) {
   }
   currentState = state;
   Serial.print("Program state changed: ");
-  Serial.println(currentState);
-  #ifdef ENABLE_REPRAP_LCD
-  sprintf(statusOutput, "%s%s", "Status: ", ProgramStateText[currentState]);
-  updateLine(0, statusOutput);
-  #endif
+  Serial.println(ProgramStateText[currentState]);
 }
 
 /**
@@ -351,35 +346,10 @@ bool hasProgramState(ProgramState state) {
  */
 void alwaysRun() {
   readStopButton();
+  rotEncRead();
+  showDisplay(ProgramStateText[currentState], cansFilled);
 }
 
-#ifdef ENABLE_REPRAP_LCD
-/**
- * Display Filling Status on LCD
- */
-void fillingDisplay() {
-  fillStatus = "Status: ";
-  fillStatus += ProgramStateText[3];
-  fillStatus += " ";
-  char statusOutput[21];
-
-  if (fillSensor1Triggered) { fillStatus +=" "; } else { fillStatus +="1"; }
-  if (fillSensor2Triggered) { fillStatus +=" "; } else { fillStatus +="2"; }
-  if (fillSensor3Triggered) { fillStatus +=" "; } else { fillStatus +="3"; }
-
-  sprintf(statusOutput, fillStatus.c_str());
-  updateLine(0, statusOutput);
-}
-
-/**
- * Display Trigger Value on LCD
- */
-void triggerDisplay() {
-  sensorValue = rotEncRead();
-  sprintf(stateOutput, "%s%d", "Trigger Value: ", sensorValue);
-  updateLine(1, stateOutput);
-}
-#endif
 /**
  * ***************************************************************************
  * ***************************** MAIN FUNCTIONS ******************************
@@ -391,10 +361,8 @@ void triggerDisplay() {
  */
 void setup() {
   Serial.begin(115200);//Serial.begin(9600);
-  #ifdef ENABLE_REPRAP_LCD
+  firstRunSettings();
   setupLCD();
-  updateLCD();
-  #endif
   setupPins();
   setupFillSensorsTimer();
   resetUnit();
@@ -404,11 +372,6 @@ void setup() {
  * The main program loop, where all the magic comes togetger.
  */
 void loop() {
-  #ifdef ENABLE_REPRAP_LCD
-  triggerDisplay();
-  updateLCD();
-  #endif
-
   switch(currentState) {
     case IDLE:
       idleState();
@@ -416,8 +379,14 @@ void loop() {
     case START:
       startState();
       break;
+    case PRE_PURGE:
+      prePurgeState();
+      break;
     case FILLING:
       fillingState();
+      break;
+    case POST_PURGE:
+      postPurgeState();
       break;
     case STOP:
       stopState();

@@ -23,16 +23,15 @@
 /**
  * General Config Options
  */
-#define CO2_PURGE_PERIOD 2000
+#define CO2_PRE_PURGE_PERIOD 2000
 #define MOVE_BEER_BELT_PERIOD 5000
 #define FILLER_TUBE_MOVEMENT_DELAY 2000
-#define CO2_PURGE_RETRACTION_DELAY 1000
-#define CO2_PURGE_RETRACTION_PERIOD 500
+#define CO2_POST_PURGE_DELAY 1000
+#define CO2_POST_PURGE_PERIOD 500
 #define FILL_SENSORS_TIMER_FREQUENCY 100000 // 100ms This value needs to be defined in microseconds.
-const int FILL_SENSOR_TRIGGERS[] {400, 500, 600}; // Ints between 0 and 1023 used to trigger the fill sensor: operating voltage(5v or 3.3v) / 1024
+#define FILL_SENSOR_TRIGGER 400 // Ints between 0 and 1023 used to trigger the fill sensor: operating voltage(5v or 3.3v) / 1024
 
 /**
  * Feature flags
  */
-//#define CONINUOUS_FILLING // Uncomment this to have the filling process repeat for new batch after the current batch has completed it filling.
-//#define ENABLE_REPRAP_LCD
+//#define CONTINUOUS_FILLING // Uncomment this to have the filling process repeat for new batch after the current batch has completed it filling.
